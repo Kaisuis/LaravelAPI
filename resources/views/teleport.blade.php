@@ -65,27 +65,27 @@
         </style>
     </head>
     <body>
-        <div class="flex-center position-ref full-height">
-            @if (Route::has('login'))
-                <div class="top-right links">
-                    @if (Auth::check())
-                        <a href="{{ url('/home') }}">Home</a>
-                    @else
-                        <a href="{{ url('/login') }}">Login</a>
-                        <a href="{{ url('/register') }}">Register</a>
-                    @endif
-                </div>
-            @endif
 
             <div class="content">
                 <div class="title m-b-md">
-                    Laravel
+                    Teleport
                 </div>
+            <form method="post" action="/search" >
+               
+                {{ csrf_field() }}
 
-            Wpisz: <input type="text" name="data">               
-
-
-            </div>
+            Wpisz: <input type="text" name="searchQuery">
+            <input type="submit" value="Szukaj">  
+ 
+       </form>  
+       
+       @if(Session::has('message'))
+       <p class="alert alert-info">{{ Session::get('message') }}</p>
+       @endif
+       
         </div>
+      
+            
+        
     </body>
 </html>

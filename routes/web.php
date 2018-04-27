@@ -9,9 +9,13 @@
 | routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
 |
-*/
+ */
 
-Route::get('/', function () {
-   return view('welcome');
+Route::get('/', function () {return view('teleport');
 });
 
+Route::get('teleport', 'TeleportController@index')->name('teleport-index');
+
+Route::post('search', 'TeleportController@search')->name('teleport-search');
+
+Route::post('city', 'TeleportController@city')->name('teleport-city');
