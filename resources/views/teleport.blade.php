@@ -76,7 +76,7 @@
                 {{ csrf_field() }}
 
             Wpisz: <input autocomplete="off" type="text" name="searchQuery" id="inp" placeholder="Wpisz miasto">
-            <input type="submit" value="Szukaj">  
+            <input type="submit" value="Szukaj" id="search">  
  
        </form>  
        
@@ -89,7 +89,7 @@
        function wpisywanie(xdata){
                     inp = document.getElementById('inp');
                     inp.value = xdata.text;
-                    $('#submit').trigger("submit");
+                    $('#search').trigger("click").attr("disabled", true);
                     
                 }
         $('#inp').keyup(function(){
@@ -113,7 +113,7 @@
         success: function (response) { 
             document.getElementById("lista").innerHTML = "";
             response.map(function (x) {
-                var li = document.createElement("LI");
+                var li = document.createElement("ol");
                 li.innerHTML = "<a href='#' onclick='wpisywanie(this);' >"+x+"</a>";                     
                 document.getElementById("lista").appendChild(li);
             })
