@@ -75,7 +75,7 @@
                
                 {{ csrf_field() }}
 
-            Wpisz: <input type="text" name="searchQuery" id="q">
+            Wpisz: <input type="text" name="searchQuery" id="q" placeholder="Wpisz miasto">
             <input type="submit" value="Szukaj">  
  
        </form>  
@@ -95,11 +95,17 @@
                         },
                         cache: false,
                         encoding: "UTF-8",
-                        url: "{{ url('teleport') }}",
+                        url: "<?php echo e(url('teleport')); ?>",
+                        beforeSend: function (xhr) {
+    var token = $('meta[name="csrf_token"]').attr('content');
+    if (token) {
+          return xhr.setRequestHeader('X-CSRF-TOKEN', token);
+    }
+},
                         data: {input: inputValue},
         success: function (response) { 
-            $tablica.map(function () {
-                
+            response.map(function (x) {
+                console.log(x);
             })
         },
         error: function (response) {

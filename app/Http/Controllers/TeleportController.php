@@ -84,14 +84,12 @@ class TeleportController extends Controller
         //
     }
 
-    public function autocomplete(Request $req)
+    public function autocomplete(Request $request)
     {
-
         if (request()->ajax()) {
             $query = $request->input;
         }
         $curl = curl_init();
-
         curl_setopt_array($curl, array(
             CURLOPT_URL => "https://api.teleport.org/api/cities/?search=$query",
             CURLOPT_RETURNTRANSFER => true,
@@ -103,19 +101,16 @@ class TeleportController extends Controller
                 // Set Here Your Requested Headers
                 'Content-Type: application/json',
                 $query,
-
             ),
         ));
         $response = curl_exec($curl);
         $err = curl_error($curl);
         curl_close($curl);
-
         if ($err || $response === false) {
             echo "cURL Error #:" . $err;
         } else {
             $tablica = json_decode($response, true);
             $url = $tablica['_embedded']["city:search-results"][0]['_links']["city:item"]['href'];
-
             $curl2 = curl_init();
             curl_setopt_array($curl2, array(
                 CURLOPT_URL => $url,
@@ -131,7 +126,6 @@ class TeleportController extends Controller
             }
             return $georesult;
         }
-
     }
 
     public function search(Request $req)
