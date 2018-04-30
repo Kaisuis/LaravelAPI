@@ -132,14 +132,12 @@ class TeleportController extends Controller
     {
 
         $searchQuery = $req->input('searchQuery');
-        $searchQuery = rawurlencode($searchQuery);
-
         if ($searchQuery == "") {
-            Session::flash('message', 'Wpisz miasto');
+            Session::flash('message', '');
         } else {
             try {
                 Teleport::create(['status' => 'pending', 'city_search' => $searchQuery]);
-
+                $searchQuery = rawurlencode($searchQuery);
                 $last_id = \Illuminate\Support\Facades\DB::getPdo()->lastInsertId();
                 if ($last_id != null) {
 

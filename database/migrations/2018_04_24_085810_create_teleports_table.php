@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateTeleportsTable extends Migration
 {
@@ -13,6 +13,7 @@ class CreateTeleportsTable extends Migration
      */
     public function up()
     {
+
         Schema::create('teleports', function (Blueprint $table) {
             $table->increments('id');
             $table->string('city_search', 25);
@@ -20,6 +21,7 @@ class CreateTeleportsTable extends Migration
             $table->binary('query_result')->nullable();
             $table->timestamps();
         });
+        DB::statement('ALTER TABLE teleports CHANGE city_search VARCHAR(120)');
     }
 
     /**

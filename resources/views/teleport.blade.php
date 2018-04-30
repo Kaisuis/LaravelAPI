@@ -75,7 +75,7 @@
                
                 {{ csrf_field() }}
 
-            Wpisz: <input type="text" name="searchQuery" id="q" placeholder="Wpisz miasto">
+            Wpisz: <input autocomplete="off" type="text" name="searchQuery" id="inp" placeholder="Wpisz miasto">
             <input type="submit" value="Szukaj">  
  
        </form>  
@@ -85,27 +85,37 @@
        @endif
        
        <script>
-        $('#q').keyup(function(){
-        if($('#q').val().length >= 3) {
-            var inputValue = $('#q').val();
+
+       function wpisywanie(xdata){
+                    inp = document.getElementById('inp');
+                    inp.value = xdata.text;
+                    $('#submit').trigger("submit");
+                    
+                }
+        $('#inp').keyup(function(){
+        if($('#inp').val().length >= 3) {
+            var inputValue = $('#inp').val();
             $.ajax({
-       type: "POST",
+                        type: "POST",
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                         },
                         cache: false,
                         encoding: "UTF-8",
                         url: "<?php echo e(url('teleport')); ?>",
-                        beforeSend: function (xhr) {
-    var token = $('meta[name="csrf_token"]').attr('content');
-    if (token) {
-          return xhr.setRequestHeader('X-CSRF-TOKEN', token);
-    }
+                        beforeSend: function (before) {
+                            var token = $('meta[name="csrf_token"]').attr('content');
+                            if (token) {
+                                return before.setRequestHeader('X-CSRF-TOKEN', token);
+                            }
 },
                         data: {input: inputValue},
         success: function (response) { 
+            document.getElementById("lista").innerHTML = "";
             response.map(function (x) {
-                console.log(x);
+                var li = document.createElement("LI");
+                li.innerHTML = "<a href='#' onclick='wpisywanie(this);' >"+x+"</a>";                     
+                document.getElementById("lista").appendChild(li);
             })
         },
         error: function (response) {
@@ -114,13 +124,13 @@
         });
         }
         else{
-
+            lista.innerHTML = "Brak wyników, wpisz więcej znaków";
         }
-        
         });
        
 </script>
-
+</br>
+    <div id="lista"></div>
         </div>
       
             
