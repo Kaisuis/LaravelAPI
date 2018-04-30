@@ -19,3 +19,5 @@ Route::get('teleport', 'TeleportController@index')->name('teleport-index');
 Route::post('search', 'TeleportController@search')->name('teleport-search');
 
 Route::post('city', 'TeleportController@city')->name('teleport-city');
+
+Route::post('teleport', 'TeleportController@autocomplete')->name('teleport-index');

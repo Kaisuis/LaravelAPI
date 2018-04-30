@@ -4,7 +4,8 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <title>Laravel</title>
 
         <!-- Fonts -->
@@ -74,7 +75,7 @@
                
                 {{ csrf_field() }}
 
-            Wpisz: <input type="text" name="searchQuery">
+            Wpisz: <input type="text" name="searchQuery" id="q">
             <input type="submit" value="Szukaj">  
  
        </form>  
@@ -83,6 +84,37 @@
        <p class="alert alert-info">{{ Session::get('message') }}</p>
        @endif
        
+       <script>
+        $('#q').keyup(function(){
+        if($('#q').val().length >= 3) {
+            var inputValue = $('#q').val();
+            $.ajax({
+       type: "POST",
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        cache: false,
+                        encoding: "UTF-8",
+                        url: "{{ url('teleport') }}",
+                        data: {input: inputValue},
+        success: function (response) { 
+            $tablica.map(function () {
+                
+            })
+        },
+        error: function (response) {
+            $('#errormessage').html(response.message);
+        }
+        });
+        }
+        else{
+
+        }
+        
+        });
+       
+</script>
+
         </div>
       
             
