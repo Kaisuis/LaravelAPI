@@ -8,8 +8,8 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
-        <title>Laravel</title>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
@@ -69,9 +69,10 @@
 
             #map {
                  height: 400px;
-                 width: 100%;
+                 width: 300px;
+                 z-index: 10;
              }
-
+                /* JEGO KOD */
 
              div.hidden {
                 display: none !IMPORTANT;
@@ -93,6 +94,27 @@
                 width: auto;
                 height: auto;
             }
+            .links > a, .photo-link > a, .close-link > a {
+                color: #636b6f;
+                padding: 5px 18px 3px;
+                font-size: 14px;
+                font-weight: 600;
+                letter-spacing: .1rem;
+                text-decoration: none;
+                text-transform: uppercase;
+            }
+            .photo-link {
+                margin-bottom: 20px;
+            }
+
+            .popup-photo .popup-container img {
+                max-width: 500px;
+                max-height: 500px;
+                width: auto;
+                height: auto;
+                border-radius: 2.5px;
+                z-index: 10;
+            }
         </style>
     </head>
     <body>
@@ -101,6 +123,22 @@
                     Teleport
                 </div>
                 <button type="button" class="btn btn-default" onclick="window.location.href='http://127.0.0.1:8000'">Powrót</button>
+                <div id="container">
+                    <div class="photo-link">
+                        <a href="#photo" @click="displayPhoto($event)">Zobacz jak wygląda {{ Request::get('city-name') }}</a>
+                    </div>
+                    
+                    <div :class="{ 'hidden': isHidden }" class="popup-photo">
+                        <div class="popup-container">
+                            <img v-click-outside="closePhoto" v-bind:src="imageUrl" id="photo">
+                            <div class="popup-buttons">
+                                <button>
+                                    Zamknij obraz
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
       <?php
           $nazwa = $tablica['_embedded']['city:search-results'][0]['matching_alternate_names'][0]['name'];
           $latitude = $tablica['location']['latlon']['latitude'];
@@ -132,19 +170,9 @@
         echo '</tbody>';
         echo '</table></center>';
       ?>   
+{{--  jego kod  --}}
 
-<div class="photo-link">
-    <a href="#photo" @click="displayPhoto($event)">Zobacz jak wygląda {{ Request::get('city-name') }}</a>
-</div>
-
- <div :class="{ 'hidden': isHidden }" class="popup-photo">
-    <div v-click-outside="closePhoto">
-        <img v-bind:src="imageUrl" id="photo">
-    </div>
-</div>
-
-
-      <div id="map"></div>
+      <div id="map"><center></center></div>
     <script>
       function initMap() {
         var uluru = {lat: <?php echo $latitude; ?>, lng: <?php echo $longitude; ?>};
@@ -163,81 +191,79 @@
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAsmCmiYejoZdTbUHOb_OJVvHbVl1a_N8Q&callback=initMap">
     </script>
 
-<script src="https://cdn.jsdelivr.net/npm/vue">
- 
-    var renderTable = new Vue ({
-                el: '#container',
-                data: {
-                    georesult: {!! json_encode($georesult) !!},
-                    googleKey: "AIzaSyCduvdllNAcURHc9As9AMAUqVlymObMPI0",
-                    googleCX: "013747875163028399998:erk-f02stja",
-                    imageUrl: '',
-                    isHidden: true
+<script>
+
+var renderTable = new Vue ({
+            el: '#container',
+            data: {
+                tablica: {!! json_encode($tablica) !!},
+                googleKey: "AIzaSyBXQjso0IDONxkfNHtXWS_QhOcO2QQmtcw",
+                googleCX: "000630032180390558171:hwrdfamj4ra",
+                imageUrl: '',
+                isHidden: true
+            },
+            methods: {
+                getFirstImage() {
+                    console.log(this.tablica)
+                    const url = `https://www.googleapis.com/customsearch/v1?key=${this.googleKey}&cx=${this.googleCX}&q=${this.tablica.name}&searchType=image&alt=json`
+                    console.log(url); axios.get(url)
+                    .then(function (response) {
+                        renderTable.imageUrl = response.data.items[0].link;
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
                 },
-                methods: {
-                    getFirstImage() {
-                        const url = `https://www.googleapis.com/customsearch/v1?key=${this.googleKey}&cx=${this.googleCX}&q=${this.georesult[0].name}&searchType=image&alt=json`
-                        axios.get(url)
-                        .then(function (response) {
-                            renderTable.imageUrl = response.data.items[0].link;
-                        })
-                        .catch(function (error) {
-                            console.log(error);
-                        });
-                    },
-                    displayPhoto(e) {
-                        e.preventDefault();
+                displayPhoto(e) {
+                    e.preventDefault();
+                    this.isHidden = false;
+                },
+                closePhoto(event) {
+                    if(event.target.id == "photo" || event.target.hash == "#photo") {
                         this.isHidden = false;
-                    },
-                    closePhoto(event) {
-                        if(event.target.id == "photo" || event.target.hash == "#photo") {
-                            this.isHidden = false;
-                        } else {
-                            this.isHidden = true;
-                        }
+                    } else {
+                        this.isHidden = true;
                     }
-                },
-                directives: {
-                  'click-outside': {
-                    bind: function(el, binding, vNode) {
-                      // Provided expression must evaluate to a function.
-                      if (typeof binding.value !== 'function') {
-                        const compName = vNode.context.name
-                        let warn = `[Vue-click-outside:] provided expression '${binding.expression}' is not a function, but has to be`
-                        if (compName) { warn += `Found in component '${compName}'` }
-            
-                        console.warn(warn)
-                      }
-                      // Define Handler and cache it on the element
-                      const bubble = binding.modifiers.bubble
-                      const handler = (e) => {
-                        if (bubble || (!el.contains(e.target) && el !== e.target)) {
-                          binding.value(e)
-                        }
-                      }
-                      el.__vueClickOutside__ = handler
-            
-                      // add Event Listeners
-                      document.addEventListener('click', handler)
-                    },
-            
-                    unbind: function(el, binding) {
-                      // Remove Event Listeners
-                      document.removeEventListener('click', el.__vueClickOutside__)
-                      el.__vueClickOutside__ = null
-            
+                }
+            },
+            directives: {
+              'click-outside': {
+                bind: function(el, binding, vNode) {
+                  // Provided expression must evaluate to a function.
+                  if (typeof binding.value !== 'function') {
+                    const compName = vNode.context.name
+                    let warn = `[Vue-click-outside  provided expression '${binding.expression}' is not a function, but has to be`
+                    if (compName) { warn += `Found in component '${compName}'` }
+        
+                    console.warn(warn)
+                  }
+                  // Define Handler and cache it on the element
+                  const bubble = binding.modifiers.bubble
+                  const handler = (e) => {
+                    if (bubble || (!el.contains(e.target) && el !== e.target)) {
+                      binding.value(e)
                     }
                   }
+                  el.__vueClickOutside__ = handler
+        
+                  // add Event Listeners
+                  document.addEventListener('click', handler)
                 },
-                
-                beforeMount(){
-                    this.getFirstImage()
+        
+                unbind: function(el, binding) {
+                  // Remove Event Listeners
+                  document.removeEventListener('click', el.__vueClickOutside__)
+                  el.__vueClickOutside__ = null
+        
                 }
-            });
-
-
+              }
+            },
+            
+            beforeMount(){
+                this.getFirstImage()
+            }
+        });
 </script>
-
 
     </div>
         
