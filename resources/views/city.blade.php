@@ -4,6 +4,10 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="https://www.google.com/jsapi"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
         <title>Laravel</title>
 
@@ -68,15 +72,35 @@
                  width: 100%;
              }
 
+
+             div.hidden {
+                display: none !IMPORTANT;
+            }
+            .popup-photo {
+                position: fixed;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background: rgba(0,0,0,0.12);
+            }
+            .popup-photo div img {
+                max-width: 500px;
+                max-height: 500px;
+                width: auto;
+                height: auto;
+            }
         </style>
     </head>
     <body>
-
             <div class="content">
                 <div class="title m-b-md">
                     Teleport
                 </div>
-            
+                <button type="button" class="btn btn-default" onclick="window.location.href='http://127.0.0.1:8000'">Powrót</button>
       <?php
           $nazwa = $tablica['_embedded']['city:search-results'][0]['matching_alternate_names'][0]['name'];
           $latitude = $tablica['location']['latlon']['latitude'];
@@ -84,9 +108,7 @@
         echo '<h2>Wyniki wyszukiwania dla:'.$nazwa.'</h2>';
           $pnazwa = $tablica['_embedded']['city:search-results'][0]['matching_full_name'];
           $populacja = $tablica['population'];
-          
-            
-        
+
         echo '<center><table class="table table-dark">';
         echo '<thead>';
         echo '<tr>';
@@ -109,9 +131,19 @@
         echo '</tr>';
         echo '</tbody>';
         echo '</table></center>';
-
-
       ?>   
+
+<div class="photo-link">
+    <a href="#photo" @click="displayPhoto($event)">Zobacz jak wygląda {{ Request::get('city-name') }}</a>
+</div>
+
+ <div :class="{ 'hidden': isHidden }" class="popup-photo">
+    <div v-click-outside="closePhoto">
+        <img v-bind:src="imageUrl" id="photo">
+    </div>
+</div>
+
+
       <div id="map"></div>
     <script>
       function initMap() {
@@ -126,11 +158,85 @@
         });
       }
     </script>
+
     <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAsmCmiYejoZdTbUHOb_OJVvHbVl1a_N8Q&callback=initMap">
     </script>
 
+<script src="https://cdn.jsdelivr.net/npm/vue">
+ 
+    var renderTable = new Vue ({
+                el: '#container',
+                data: {
+                    georesult: {!! json_encode($georesult) !!},
+                    googleKey: "AIzaSyCduvdllNAcURHc9As9AMAUqVlymObMPI0",
+                    googleCX: "013747875163028399998:erk-f02stja",
+                    imageUrl: '',
+                    isHidden: true
+                },
+                methods: {
+                    getFirstImage() {
+                        const url = `https://www.googleapis.com/customsearch/v1?key=${this.googleKey}&cx=${this.googleCX}&q=${this.georesult[0].name}&searchType=image&alt=json`
+                        axios.get(url)
+                        .then(function (response) {
+                            renderTable.imageUrl = response.data.items[0].link;
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                    },
+                    displayPhoto(e) {
+                        e.preventDefault();
+                        this.isHidden = false;
+                    },
+                    closePhoto(event) {
+                        if(event.target.id == "photo" || event.target.hash == "#photo") {
+                            this.isHidden = false;
+                        } else {
+                            this.isHidden = true;
+                        }
+                    }
+                },
+                directives: {
+                  'click-outside': {
+                    bind: function(el, binding, vNode) {
+                      // Provided expression must evaluate to a function.
+                      if (typeof binding.value !== 'function') {
+                        const compName = vNode.context.name
+                        let warn = `[Vue-click-outside:] provided expression '${binding.expression}' is not a function, but has to be`
+                        if (compName) { warn += `Found in component '${compName}'` }
+            
+                        console.warn(warn)
+                      }
+                      // Define Handler and cache it on the element
+                      const bubble = binding.modifiers.bubble
+                      const handler = (e) => {
+                        if (bubble || (!el.contains(e.target) && el !== e.target)) {
+                          binding.value(e)
+                        }
+                      }
+                      el.__vueClickOutside__ = handler
+            
+                      // add Event Listeners
+                      document.addEventListener('click', handler)
+                    },
+            
+                    unbind: function(el, binding) {
+                      // Remove Event Listeners
+                      document.removeEventListener('click', el.__vueClickOutside__)
+                      el.__vueClickOutside__ = null
+            
+                    }
+                  }
+                },
+                
+                beforeMount(){
+                    this.getFirstImage()
+                }
+            });
 
+
+</script>
 
 
     </div>

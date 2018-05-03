@@ -6,20 +6,21 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <title>Laravel</title>
 
         <!-- Fonts -->
-        <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
-
+        <link href="https://fonts.googleapis.com/css?family=Montserrat:300" rel="stylesheet"> 
         <!-- Styles -->
         <style>
             html, body {
                 background-color: #fff;
-                color: #636b6f;
-                font-family: 'Raleway', sans-serif;
-                font-weight: 100;
+                font-family: 'Montserrat', sans-serif;
                 height: 100vh;
                 margin: 0;
+                width: 100%;
+                color: black;
             }
 
             .full-height {
@@ -62,7 +63,13 @@
 
             .m-b-md {
                 margin-bottom: 30px;
+                color:#636b6f;
             }
+            .alert alert-info{
+
+                background-color: #fff;
+            }
+          
         </style>
     </head>
     <body>
@@ -71,14 +78,18 @@
                 <div class="title m-b-md">
                     Teleport
                 </div>
-            <form method="post" action="/search" >
-               
-                {{ csrf_field() }}
-
-            Wpisz: <input autocomplete="off" type="text" name="searchQuery" id="inp" placeholder="Wpisz miasto">
-            <input type="submit" value="Szukaj" id="search">  
- 
-       </form>  
+                
+                <center><form method="post" action="/search">
+                    {{ csrf_field() }}
+                    <div class="input-group">
+                      <input autocomplete="off" name="searchQuery" type="text" class="form-control" placeholder="Search" id="inp">
+                      <div class="input-group-btn">
+                        <button class="btn btn-default" type="submit" id="search">
+                          <i class="glyphicon glyphicon-search"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </form> </center>
        
        @if(Session::has('message'))
        <p class="alert alert-info">{{ Session::get('message') }}</p>
@@ -113,7 +124,7 @@
         success: function (response) { 
             document.getElementById("lista").innerHTML = "";
             response.map(function (x) {
-                var li = document.createElement("ol");
+                var li = document.createElement("p");
                 li.innerHTML = "<a href='#' onclick='wpisywanie(this);' >"+x+"</a>";                     
                 document.getElementById("lista").appendChild(li);
             })
@@ -132,8 +143,12 @@
 </br>
     <div id="lista"></div>
         </div>
-      
+        <div id="hr">
+        <hr/ style="width: 200px;">
+        <center>Stanisław Musiał</center>
+        <hr/ style="width: 300px;">
+        </div>
             
-        
+    
     </body>
 </html>
