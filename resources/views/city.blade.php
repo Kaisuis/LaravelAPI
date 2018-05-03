@@ -17,8 +17,8 @@
         <!-- Styles -->
         <style>
             html, body {
-                background-color: #fff;
-                color: #636b6f;
+                background-color: white;
+                color: black;
                 font-family: 'Raleway', sans-serif;
                 font-weight: 100;
                 height: 100vh;
@@ -69,8 +69,9 @@
 
             #map {
                  height: 400px;
-                 width: 300px;
-                 z-index: 10;
+                 width: 100%;
+                 z-index: 1;
+                
              }
                 /* JEGO KOD */
 
@@ -93,6 +94,7 @@
                 max-height: 500px;
                 width: auto;
                 height: auto;
+                z-index: +1;
             }
             .links > a, .photo-link > a, .close-link > a {
                 color: #636b6f;
@@ -113,7 +115,8 @@
                 width: auto;
                 height: auto;
                 border-radius: 2.5px;
-                z-index: 10;
+                z-index: +1;
+                
             }
         </style>
     </head>
@@ -123,7 +126,9 @@
                     Teleport
                 </div>
                 <button type="button" class="btn btn-default" onclick="window.location.href='http://127.0.0.1:8000'">Powrót</button>
+            </br>
                 <div id="container">
+                    <br>
                     <div class="photo-link">
                         <a href="#photo" @click="displayPhoto($event)">Zobacz jak wygląda {{ Request::get('city-name') }}</a>
                     </div>
@@ -171,7 +176,9 @@
         echo '</table></center>';
       ?>   
 {{--  jego kod  --}}
-
+        <br>
+    
+        <h2><center>Mapa:</center></h2>
       <div id="map"><center></center></div>
     <script>
       function initMap() {
@@ -207,7 +214,7 @@ var renderTable = new Vue ({
                     console.log(this.tablica)
                     const url = `https://www.googleapis.com/customsearch/v1?key=${this.googleKey}&cx=${this.googleCX}&q=${this.tablica.name}&searchType=image&alt=json`
                     console.log(url); axios.get(url)
-                    .then(function (response) {
+                    .then(function (response) {                                               
                         renderTable.imageUrl = response.data.items[0].link;
                     })
                     .catch(function (error) {
