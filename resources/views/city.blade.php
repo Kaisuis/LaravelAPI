@@ -18,7 +18,7 @@
         <style>
             html, body {
                 background-color: white;
-                color: black;
+                color: #636b6f;
                 font-family: 'Raleway', sans-serif;
                 font-weight: 100;
                 height: 100vh;
@@ -88,6 +88,7 @@
                 justify-content: center;
                 align-items: center;
                 background: rgba(0,0,0,0.12);
+                z-index: +1;
             }
             .popup-photo div img {
                 max-width: 500px;
